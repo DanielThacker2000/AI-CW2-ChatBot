@@ -320,9 +320,7 @@ def evaluate_affected_journeys(cancelled_stops, schedules_cancelled, line_block_
     last_train = []  # connectional policy: if the train is the last one of the day then hold it for longer if trains which have booked connections with other services
 
     return golden, special, hat_field, special_delays, golden_uids, school_uids
-        #are stranded customers involved? 
-        #are the journeys special stop orders?
-        #Is the journey a golden service?
+
 
 
 def clean_schedules(train_schedules):
