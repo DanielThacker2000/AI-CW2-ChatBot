@@ -4,7 +4,7 @@ Created on Wed May  1 10:25:35 2024
 
 @author: dan
 """
-#from collections.abc import Mapping
+
 import loading_json
 from experta.watchers import RULES, AGENDA
 from datetime import datetime, timedelta
@@ -22,7 +22,7 @@ FONT = "Helvetica 14"
 FONT_BOLD = "Helvetica 13 bold"
 
 train_schedules = loading_json.import_json()
-process_schedule_all.get_all_schedule_advice("LIVST",1500, train_schedules)
+#process_schedule_all.get_all_schedule_advice("LIVST",1500, train_schedules)
 
 
 
@@ -136,46 +136,24 @@ class ChatBot:
         self.text_widget.see(CURRENT)
         self.text_widget.configure(state=DISABLED)
 
-"""
-Obtain info:
-    It is a full or partial blockage?
-    Which station you at?
-    What time is it? 
-    Who am I talking to? e.g. Manager, signallers, railstaff, passenger etc
-    
-Output:
-    Advice i,e,
-    Amended services:
-    1 per hour: Greater Anglia Braintree Shuttle--<Operates as Braintree - Witham shuttle>
-    1 per hour: Greater Anglia Harwich Shuttle--<Operates as Manningtree-Harwich shuttle>
-    
 
-"""
 #%%
 
-#Knowledge:
-    #contains keys that show what the bot knows i.e. self.knowledge['location'] == "LIVST"
-#Dictionary:
     
 def find_intention(user_input, dictionary, knowledge):
     if user_input == "blocked":
         knowledge['question'] = 'ask_location'
         return 'line_block'
-
-        
+    
 
 #get the advice
 # df = pd.read_csv('contingency_advice.csv')
 # df = df.replace(r'\\n', '\n', regex=True)
 # print(df['alt_transport'][2])
 
-
 class line_blockage(Fact):
     "Contains all info about the event"
     pass
-# class get_input(Fact):
-#     "user input"
-#     pass
 
 class location(Fact):
     "contains 2 station names that has a line blockage"
@@ -201,20 +179,8 @@ class customer(Fact):
     pass
 
 class contingency_expert(KnowledgeEngine):
-    #FULL AND TRAINSTAFF
-    """
-    @Rule(AS.full_or_part << full_or_part(f_or_p =L('full')),
-          AS.customer << customer(cust =L('train_staff')))
-    def advise_train_staff_full(self, full_or_part, customer):
-        print("There is a", full_or_part["f_or_p"], "blockage, and you are a", customer["cust"])
-        
-    #PARTIAL and TRAIN_STAFF
-    @Rule(AS.full_or_part << full_or_part(f_or_p =L('partial')),
-          AS.customer << customer(cust =L('train_staff')))
-    def advise_train_staff_part(self, full_or_part, customer):
-        print("There is a", full_or_part["f_or_p"], "blockage, and you are a", customer["cust"])
-    
-    """
+
+
     # @DefFacts()
     # def _initial_action(self):
     #     if 'reset' in self.dictionary:
@@ -259,7 +225,7 @@ class contingency_expert(KnowledgeEngine):
         AS.user_input_fact << Fact("get_input", user_input=MATCH.user_input),
         Fact(service="chat"),
         NOT(Fact(location_provided=True))
-        ) #I think this would have to include 'NOT(Fact(book_ticket)) etc when there's more than one fact
+        ) 
     def ask_if_blockage(self, user_input_fact, user_input):
         self.retract(user_input_fact)
         
@@ -277,8 +243,6 @@ class contingency_expert(KnowledgeEngine):
         Fact(service= "line_blockage"),
         NOT(Fact(location_provided=True))
         ) 
-    #If line blockage is true then get more info. Checks need to be performed to get whether it is full or partial
-    #whether the customer is a 'train_staff' or a 'signaller', which station the blockage is in and what time it is
     def get_location(self, user_input_fact, user_input):
         self.retract(user_input_fact)
         if 'location' in self.dictionary:
@@ -289,7 +253,7 @@ class contingency_expert(KnowledgeEngine):
         else:
             #if it's already asked the question and can't comprehend it
             if self.knowledge['question'] == 'ask_location':
-                output = "Sorry I dont geddit" #make this be a function
+                output = "Sorry I dont geddit" 
             else:
                 self.knowledge['question'] = 'ask_location'
                 output = "Pls give location"
@@ -304,8 +268,6 @@ class contingency_expert(KnowledgeEngine):
         NOT(Fact(time_provided=True)),
         NOT(Fact(isQuestion))
         ) 
-    #If line blockage is true then get more info. Checks need to be performed to get whether it is full or partial
-    #whether the customer is a 'train_staff' or a 'signaller', which station the blockage is in and what time it is
     def get_time(self, user_input_fact, user_input):
         self.retract(user_input_fact)
         if 'time' in self.dictionary:
@@ -316,7 +278,7 @@ class contingency_expert(KnowledgeEngine):
         else:
             #if it's already asked the question and can't comprehend it
             if self.knowledge['question'] == 'ask_time':
-                output = "Sorry I dont geddit" #make this be a function
+                output = "Sorry I dont geddit" 
             else:
                 self.knowledge['question'] = 'ask_time'
                 output= "What's the time?"
@@ -330,8 +292,6 @@ class contingency_expert(KnowledgeEngine):
         NOT(Fact(full_or_part_provided=True)),
         NOT(Fact(isQuestion))
         ) 
-    #If line blockage is true then get more info. Checks need to be performed to get whether it is full or partial
-    #whether the customer is a 'train_staff' or a 'signaller', which station the blockage is in and what time it is
     def get_full_or_part(self, user_input_fact, user_input):
         self.retract(user_input_fact)
         if 'full_or_part' in self.dictionary:
@@ -342,7 +302,7 @@ class contingency_expert(KnowledgeEngine):
         else:
             #if it's already asked the question and can't comprehend it
             if self.knowledge['question'] == 'ask_full_or_part':
-                output = "Sorry I dont geddit" #make this be a function
+                output = "Sorry I dont geddit" 
             else:
                 self.knowledge['question'] = 'ask_full_or_part'
                 output= "Is it a full or partial blockage?"
@@ -356,8 +316,6 @@ class contingency_expert(KnowledgeEngine):
         NOT(Fact(customer_provided=True)),
         NOT(Fact(isQuestion))
         ) 
-    #If line blockage is true then get more info. Checks need to be performed to get whether it is full or partial
-    #whether the customer is a 'train_staff' or a 'signaller', which station the blockage is in and what time it is
     def get_customer(self, user_input_fact, user_input):
         self.retract(user_input_fact)
         if 'customer' in self.dictionary:
@@ -368,7 +326,7 @@ class contingency_expert(KnowledgeEngine):
         else:
             #if it's already asked the question and can't comprehend it
             if self.knowledge['question'] == 'ask_customer':
-                output = "Sorry I dont geddit" #make this be a function
+                output = "Sorry I dont geddit" 
             else:
                 self.knowledge['question'] = 'ask_customer'
                 output= "What is your profession?"
@@ -392,9 +350,6 @@ expert = contingency_expert()
 expert.dictionary = {}
 expert.knowledge = {}
 expert.reset()
-
-
-
 
 # Run the knowledge base to diagnose the illness
 expert.run()
