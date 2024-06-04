@@ -7,6 +7,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException, StaleElementReferenceException, \
     ElementClickInterceptedException
+from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import Select
 import time
@@ -125,12 +126,12 @@ def input_departure_date(driver, choose_date):
             EC.element_to_be_clickable((By.ID, "leaving-date"))
         )
         date_picker.click()
-        time.sleep(2)
+        time.sleep(1)
 
         # Navigate to the correct month PLS
         while True:
             current_month_element = WebDriverWait(driver, 10).until(
-                EC.presence_of_element_located((By.CLASS_NAME, 'react-datepicker__current-month'))
+                EC.element_to_be_clickable((By.CLASS_NAME, 'react-datepicker__current-month'))
             )
             current_month = current_month_element.text
             if current_month == target_month:
@@ -140,23 +141,73 @@ def input_departure_date(driver, choose_date):
             time.sleep(1)
 
         # Select the day PLS
+        chosen_day = choose_date_obj.strftime('%d')
+        day_class_name = f'react-datepicker__day.react-datepicker__day--0{chosen_day}'
+        print(day_class_name)
         day_element = WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable(
-                (By.XPATH, f"//div[contains(@aria-label, '{choose_date_obj.strftime('%A, %d %B %Y')}')]"))
+            EC.element_to_be_clickable((By.CLASS_NAME, day_class_name))
         )
+        # day_element = WebDriverWait(driver, 10).until(
+        #     EC.element_to_be_clickable(By.CLASS_NAME, "react-datepicker__day.react-datepicker__day--{choose_date_obj.strftime('%d')}"))
+
+        #(By.XPATH, f"//div[contains(@aria-label, '{choose_date_obj.strftime('%A, %d %B %Y')}')]")
         day_element.click()
-        time.sleep(2)
+        time.sleep(1)
 
         # Check if the date has been set correctly HOPEFULLY PLEASE
         date_input = driver.find_element(By.ID, 'leaving-date')
         current_value = date_input.get_attribute('value')
+        print(current_value)
+        # if current_value == choose_date:
+        #     print("Date inserted successfully:", choose_date)
+        # else:
+        #     # Use to sending keys if JavaScript isnt working
+        #     date_input.click()
+        #     # date_input.clear()
+        #     date_input.send_keys(Keys.CONTROL, "a")
+        #     date_input.send_keys(Keys.DELETE)
+        #     date_input.send_keys(choose_date)
+        #     print("Date inserted via send_keys:", choose_date)
+        #
+        #     # Check to see if the date is set correctly
+        #     current_value = date_input.get_attribute('value')
+        #     if current_value == choose_date:
+        #         print("Date inserted successfully via send_keys:", choose_date)
+        #     print(f"Failed to insert date. Current value: {current_value}")
+
+    except TimeoutException:
+        # Use to sending keys if JavaScript isnt working
+        date_input = driver.find_element(By.ID, 'leaving-date')
+        date_input.click()
+        # date_input.clear()
+        date_input.send_keys(Keys.CONTROL, "a")
+        date_input.send_keys(Keys.DELETE)
+        date_input.send_keys(choose_date)
+        print("Date inserted via send_keys:", choose_date)
+
+        # Check to see if the date is set correctly
+        current_value = date_input.get_attribute('value')
         if current_value == choose_date:
-            print("Date inserted successfully:", choose_date)
-        else:
-            print(f"Failed to insert date. Current value: {current_value}")
+            print("Date inserted successfully via send_keys:", choose_date)
+        print(f"Failed to insert date. Current value: {current_value}")
+
 
     except Exception as e:
         print(f"An error occurred: {e}")
+        # Use to sending keys if JavaScript isnt working
+        date_input = driver.find_element(By.ID, 'leaving-date')
+        date_input.click()
+        # date_input.clear()
+        date_input.send_keys(Keys.CONTROL, "a")
+        date_input.send_keys(Keys.DELETE)
+        date_input.send_keys(choose_date)
+        print("Date inserted via send_keys:", choose_date)
+
+        # Check to see if the date is set correctly
+        current_value = date_input.get_attribute('value')
+        if current_value == choose_date:
+            print("Date inserted successfully via send_keys:", choose_date)
+        print(f"Failed to insert date. Current value: {current_value}")
 
 
 def select_departure_hour(driver, hour):
@@ -190,7 +241,7 @@ def select_adults(driver, passenger_number):
         adults = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.ID, 'adults')))
         select = Select(adults)
         select.select_by_value(str(passenger_number))
-        time.sleep(2)
+        time.sleep(0.5)
         print("Adult passengers entered:", passenger_number)
     except TimeoutException:
         print("Timeout occurred waiting for passenger input")
@@ -203,7 +254,7 @@ def select_children(driver, passenger_number):
         children = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.ID, 'children')))
         select = Select(children)
         select.select_by_value(str(passenger_number))
-        time.sleep(2)
+        time.sleep(0.5)
         print("Child passengers entered:", passenger_number)
     except TimeoutException:
         print("Timeout occurred waiting for passenger input")
@@ -216,12 +267,12 @@ def add_railcard(driver, railcard):
         railcard_button = WebDriverWait(driver, 20).until(
             EC.element_to_be_clickable((By.XPATH, '//*[@id="jp-form"]/section/div[5]/div/div/button')))
         railcard_button.click()
-        time.sleep(2)
+        time.sleep(1)
 
         select_railcard = WebDriverWait(driver, 20).until(
             EC.presence_of_element_located((By.ID, 'railcard-0'))
         )
-        time.sleep(2)
+        time.sleep(1)
 
         select = Select(select_railcard)
 
@@ -253,28 +304,30 @@ def click_show_trains(driver):
 
 def click_feedback(driver):
     try:
-        click_no = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, 'fsrInvite')))
-        time.sleep(5)
+        click_no = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, '//*[@id="fsrInvite"]/section[3]/button[2]')))
+        time.sleep(1)
         click_no.click()
-        time.sleep(3)
+        time.sleep(1)
         print("No feedback clicked")
     except TimeoutException:
         print("timeout occurred whilst waiting for feedback click")
 
 def click_continue(driver):
     try:
-        click_ticket = WebDriverWait(driver,10).until(EC.element_to_be_clickable((By.XPATH, '//*[@id="outward-1"]')))
-        time.sleep(3)
+        # click_ticket = WebDriverWait(driver,10).until(EC.element_to_be_clickable((By.XPATH, '//*[@id="outward-1"]')))
+        click_ticket = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.ID, 'result-card-selection-outward-0-422def92')))
+        time.sleep(0.5)
         click_ticket.click()
         driver.execute_script("arguments[0].click();", click_ticket)
-        time.sleep(2)
-        cont_button = WebDriverWait(driver,10).until(EC.element_to_be_clickable((By.XPATH, '//*[@id="jp-summary-buy-link"]/span[1]')))
-        time.sleep(2)
+        time.sleep(0.5)
+        #cont_button = WebDriverWait(driver,10).until(EC.element_to_be_clickable((By.XPATH, '//*[@id="jp-summary-buy-link"]/span[1]')))
+        cont_button = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.ID, 'jp-summary-buy-link')))
+        time.sleep(0.5)
         cont_button.click()
-        time.sleep(2)
-        buy_button = WebDriverWait(driver,10).until(EC.element_to_be_clickable((By.XPATH, '//*[@id="jp-summary-buy-link"]/span[1]')))
-        time.sleep(1)
-        buy_button.click()
+        time.sleep(0.5)
+        # buy_button = WebDriverWait(driver,10).until(EC.element_to_be_clickable((By.XPATH, '//*[@id="jp-summary-buy-link"]/span[1]')))
+        # time.sleep(1)
+        # buy_button.click()
     except TimeoutException:
         print('timed out')
 
@@ -282,9 +335,10 @@ def click_continue(driver):
 def extract_train_ticket(driver):
     try:
         ticket_elements = WebDriverWait(driver, 20).until(
-            EC.presence_of_all_elements_located((By.XPATH, '//*[@id="outward-0"]/div/div/div[4]/div[1]/a'))
+            EC.element_to_be_clickable((By.XPATH, '//*[@id="outward-0"]/div/div/div[4]/div[1]/a'))
         )
-        ticket_links = [elem.get_attribute('href') for elem in ticket_elements]
+        # ticket_links = [elem.get_attribute('href') for elem in ticket_elements]
+        ticket_links = ticket_elements.get_attribute('href')
         return ticket_links
     except TimeoutException:
         print('timeout occurred whilst waiting for ticket links')
@@ -296,6 +350,7 @@ def main(destination, departure, date, train_time, adults, children, railcard):
     destination_location = destination
     departure_location = departure
     choose_date = date
+    #choose_date = "07 June 2024"
     choose_hour = train_time[0]
     choose_minute = train_time[1]
     passenger_number_adult = adults
@@ -317,7 +372,7 @@ def main(destination, departure, date, train_time, adults, children, railcard):
     input_locations(driver, departure_location, destination_location)
     # Input departure time
     input_departure_date(driver, choose_date)
-    time.sleep(3)
+    # time.sleep(3)
     select_departure_hour(driver, choose_hour)
     select_departure_minute(driver, choose_minute)
     select_adults(driver, passenger_number_adult)
@@ -329,16 +384,22 @@ def main(destination, departure, date, train_time, adults, children, railcard):
     time.sleep(2)
     click_continue(driver)
     ticket_links = extract_train_ticket(driver)
+    # try:
+    #     click_continue(driver)
+    # except:
+    #     pass
+    # ticket_links = extract_train_ticket(driver)
     if ticket_links:
-        print("Train ticket link:")
-        for link in ticket_links:
-            print(link)
+        print(f"Train ticket link: {ticket_links}")
+        return ticket_links
     else:
-        print("Failed to retrieve ticket link")
+        fail_message = "Failed to retrieve ticket link"
+        return fail_message
 
-    time.sleep(160)
+    # time.sleep(160)
     driver.quit()
 
 
+
 if __name__ == "__main__":
-    main()
+    main("NORWICH", "DISS", "07 June 2024", ["20", "15"], 3, 3, "")

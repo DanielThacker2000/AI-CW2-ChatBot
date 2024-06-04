@@ -15,6 +15,7 @@ intentions = {
         "Book a train from to"
         "I want a ticket from to"
         "Price for passengers to"
+        "Book a train from place to place on the day of month"
     ],
     "delay": [
         "Is the train running late?",
@@ -22,6 +23,7 @@ intentions = {
         "Has the train been delayed?",
         "Why is the train delayed?",
         "When will the delayed train arrive?"
+        "How many minutes late am I?"
     ],
     "greeting": [
         "hello",

@@ -27,6 +27,7 @@ TEXT_COLOUR = "black"
 FONT = "Helvetica 14"
 FONT_BOLD = "Helvetica 13 bold"
 
+
 class ChatBot:
     def __init__(self):
         self.reinput = False   # Flag for handling cases where unclear information is given
@@ -294,7 +295,7 @@ class ChatBot:
                 self.text_widget.insert(tk.END, link, ('link', link))
                 self.text_widget.tag_config('link', foreground='blue', underline=True)
                 self.text_widget.tag_bind('link', '<Button-1>', lambda event, url=link: webbrowser.open_new(url))
-            # self.text_widget.insert(tk.END, "YAY! THE TICKET!!!!")
+            self.text_widget.insert(tk.END, "\n")
         else:
             self.text_widget.insert(tk.END, msg1)
         self.text_widget.see(tk.END)
@@ -381,8 +382,8 @@ class CustomerExpert(KnowledgeEngine):
 
         ticket_links = Webscraping.main(d, de, dt, t, a, c, r)
         if ticket_links:
-            for link in ticket_links:
-                app.insert_messages(f"Ticket Link: {link}", "Chatbot")
+            # for link in ticket_links:
+            app.insert_messages(f"Ticket Link: {ticket_links}", "Chatbot")
         else:
             app.insert_messages("There were no available tickets for your request.", "Chatbot")
 
@@ -419,12 +420,11 @@ class CustomerExpert(KnowledgeEngine):
         self.request = ""
         self.type = "completed"
         report = f"Destination: {d}\nCurrent Station: {c}\nMinutes Late: {ml}"
-        app.insert_messages(report, "Chatbot")
+        # app.insert_messages(report, "Chatbot")
 
         delay_report = predict_delay.predict_lateness(c, d, ml)
         app.insert_messages(delay_report, "Chatbot")
 
-        tm.sleep(1)
         app.insert_messages("Thank you for using the chatbot. If you have another request, let me know!", "Chatbot")
         self.halt()
 

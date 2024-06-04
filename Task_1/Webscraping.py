@@ -312,7 +312,10 @@ def main():
     time.sleep(1)
     click_feedback(driver)
     time.sleep(2)
-    click_continue(driver)
+    try:
+        click_continue(driver)
+    except:
+        pass
     ticket_links = extract_train_ticket(driver)
     if ticket_links:
         print("Train ticket link:")

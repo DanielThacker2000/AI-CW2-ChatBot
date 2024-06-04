@@ -152,9 +152,9 @@ def process_hour(input_hour):
         round_minutes = round(int_minutes / 15) * 15
         # Properly format 60 and 0 minutes
         if round_minutes == 60:
-            round_minutes = 00
+            round_minutes = "00"
         elif round_minutes == 0:
-            round_minutes = 00
+            round_minutes = "00"
         minutes = str(round_minutes)
         return [hh_time, minutes]
     else:
@@ -379,17 +379,13 @@ def process_railcard_only(input_railcard):
 
 def process_booking_input(initial_input):
     spelling_corrected = correct_spelling(initial_input)
-    print("Corrected Spelling: ", spelling_corrected)
+    # print("Corrected Spelling: ", spelling_corrected)
     departure, destination, current = process_station(initial_input)
-    if departure == "unclear" or destination == "unclear":
-        departure, destination, current = process_station(spelling_corrected)
     # time = process_time(initial_input)
     time = process_hour(initial_input)
     date = process_date(initial_input)
     adults, children = process_passengers(initial_input)
     railcard = process_railcard(initial_input)
-    if railcard == "unclear":
-        railcard = process_railcard(spelling_corrected)
 
     return departure, destination, time, date, adults, children, railcard
 
