@@ -324,20 +324,28 @@ def click_feedback(driver):
 def click_continue(driver):
     try:
         click_ticket = WebDriverWait(driver,10).until(EC.element_to_be_clickable((By.XPATH, '//*[contains(@id, "outward-0")][1]')))
-        click_ticket_price = click_ticket.find_elements(By.XPATH, ".//span[contains(text(), '£')]")
-        cheapest = float(click_ticket_price[0].text.replace('£', ''))
+        # print(click_ticket)
+        # click_ticket_price = click_ticket.find_elements(By.XPATH, ".//span[contains(text(), '£')]")
+        # cheapest = float(click_ticket_price[0].text.replace('£', ''))
+        #
+        # available_tickets = driver.find_elements(By.XPATH, '//*[contains(@id, "outward-")][1]')
+        # print(len(available_tickets))
+        # counter = 0
+        # for ticket_option in available_tickets[:5]:
+        #     counter += 1
+        #     current_ticket_price = ticket_option.find_elements(By.XPATH, ".//span[contains(text(), '£')]")
+        #     if current_ticket_price:
+        #         current_ticket_price = float(current_ticket_price[0].text.replace('£', ''))
+        #         if current_ticket_price < cheapest:
+        #             click_ticket = ticket_option
+        #             cheapest = current_ticket_price
+        # print(click_ticket)
+        #
+        # cheapest_ticket_string = f'//*[contains(@id, "outward-{counter-1}")][1]'
+        # print(cheapest_ticket_string)
+        # cheapest_ticket = WebDriverWait(driver,10).until(EC.element_to_be_clickable((By.XPATH, cheapest_ticket_string)))
 
-        available_tickets = driver.find_elements(By.XPATH, '//*[contains(@id, "outward-")][1]')
-        for ticket_option in available_tickets:
-            current_ticket_price = ticket_option.find_elements(By.XPATH, ".//span[contains(text(), '£')]")
-            if current_ticket_price:
-                current_ticket_price = float(current_ticket_price[0].text.replace('£', ''))
-                if current_ticket_price < cheapest:
-                    click_ticket = ticket_option
-                    cheapest = current_ticket_price
-                    print("new cheapest ticket")
-
-        #click_ticket = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.ID, 'result-card-selection-outward-0-422def92')))
+        #click_ticket = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, 'result-card-selection-outward-0-422def92')))
         time.sleep(0.5)
         click_ticket.click()
         driver.execute_script("arguments[0].click();", click_ticket)
@@ -417,12 +425,12 @@ def main(destination, departure, date, train_time, adults, children, railcard):
     click_feedback(driver)
     ticket_links.append(driver.current_url)
     click_buy(driver)
-    try:
-        WebDriverWait(driver, 20).until(EC.url_contains("greateranglia"))
-        click_ga_cookie(driver)
-        ticket_links.append(driver.current_url)
-    except:
-        pass
+    driver.switch_to.window(driver.window_handles[-1])
+    time.sleep(6)
+    click_ga_cookie(driver)
+    ticket_links.append(driver.current_url)
+    # except:
+    #     pass
     #ticket_links = extract_train_ticket(driver)
     # try:
     #     click_continue(driver)
@@ -442,4 +450,4 @@ def main(destination, departure, date, train_time, adults, children, railcard):
 
 
 if __name__ == "__main__":
-    main("NORWICH", "DISS", "07 June 2024", ["20", "15"], 3, 3, "no")
+    main("NORWICH", "STRATFORD", "07 July 2024", ["18", "45"], 3, 3, "no")
