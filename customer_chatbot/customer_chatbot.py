@@ -135,8 +135,6 @@ class ChatBot:
                 else:
                     self.insert_messages("Sorry, I didn't get that. Please re-enter your date of travel.", "Chatbot")
                     self.reinput = True
-                expert.declare(Ticket(date=date))
-                expert.request = ""
             elif expert.request == "get_time":
                 train_time = ip.process_hour(msg)
                 print(train_time)

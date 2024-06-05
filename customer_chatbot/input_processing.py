@@ -302,6 +302,15 @@ def process_lateness(input_lateness):
                         break
                     else:
                         minutes_late += (60 * number)
+                elif token.nbor().is_digit or token.nbor().like_num:
+                    try:
+                        next_number = w2n.word_to_num(token.nbor().text) if token.like_num else int(token.nbor().text)
+                        minutes_late += (number + next_number)
+                        i += 2
+                    except ValueError:
+                        # If conversion fails, move to the next token
+                        i += 1
+                        continue
             else:
                 break
 
@@ -423,9 +432,9 @@ def lemmatize_and_clean(input):
 
 if __name__ == "__main__":
     # TESTING INPUTS HERE
-    input = "colechester"
-    print("\nInput: ", input)
-    print("Station: ", process_single_station(input))
+    # input = "colechester"
+    # print("\nInput: ", input)
+    # print("Station: ", process_single_station(input))
 
     # input = "i have a 16-25 railcard."
     # print("\nInput: ", input)
@@ -443,13 +452,13 @@ if __name__ == "__main__":
     # print("\nInput: ", input)
     # print("Date: ", process_date(input))
     #
-    input = "7:32 am"
-    print("\nInput: ", input)
-    print("Time: ", process_hour(input))
-    #
-    # input = "I'm seven minutes and half an hour late."
+    # input = "7:32 am"
     # print("\nInput: ", input)
-    # print("Minutes Late: ", process_lateness(input))
+    # print("Time: ", process_hour(input))
+    #
+    input = "I'm forty five minutes late."
+    print("\nInput: ", input)
+    print("Minutes Late: ", process_lateness(input))
     #
     # input = "I want to check a delay going from ipswich to colchester"
     # print("\nInput: ", input)
