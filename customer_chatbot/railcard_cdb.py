@@ -10,62 +10,63 @@ railcards = {
         "16-17 Saver",
         "TSU railcard",
     ],
-    "16-25 Railcard": [
+    "YNG": [
         "16-25 Railcard",
         "YNG railcard",
     ],
-    "26-30 Railcard": [
+    "TST": [
         "26-30 Railcard",
         "TST railcard",
     ],
-    "Annual Gold Card": [
+    "NGC": [
         "annual gold card",
         "ngc railcard",
     ],
-    "Dales Railcard": [
+    "DRD": [
         "dales railcard",
         "drd railcard",
     ],
-    "Devon & Cornwall Gold Card": [
+    "DCG": [
         "devon & cornwall gold card",
         "devon and cornwall gold card"
         "dcg railcard",
     ],
-    "Devon & Cornwall Card": [
+    "DCR": [
         "devon & cornwall card",
         "devon and cornwall card"
         "dcr railcard",
     ],
-    "Disabled Persons Railcard": [
+    "DIS": [
         "disabled persons railcard",
         "dis railcard",
     ],
-    "Esk Valley Railcard": [
+    "EVC": [
         "esk valley railcard",
         "evc railcard",
     ],
-    "Family & Friends Railcard": [
+    "FAM": [
         "family & friends railcard",
         "fam railcard",
     ],
-    "Group Save Railcard": [
+    "GS3": [
         "group save railcard",
         "GS3 railcard",
     ],
-    "Highland Railcard": [
+    "HRC": [
         "highland railcard",
         "hrc railcard",
     ],
-    "HM Forces Railcard": [
+    "HMF": [
         "hm forces railcard",
         "hmf railcard",
     ],
-    "Jobcentre Plus Travel Discount Card": [
+    "JCP": [
         "job centre plus travel discount card",
         "hrc railcard",
     ],
-    "MyCumbria Card": [
+    "CUR": [
         "my cumbria card",
+        "mycumbria card",
         "cur railcard",
     ]
 }

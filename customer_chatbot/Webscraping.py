@@ -29,6 +29,14 @@ def click_cookie(driver):
     except Exception as e:
         print('Error clicking on cookie consent:', e)
 
+def click_ga_cookie(driver):
+    try:
+        button = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.ID, "CybotCookieDialogBodyLevelButtonLevelOptinAllowAll")))
+        button.click()
+        print('Clicked on cookie consent')
+    except Exception as e:
+        print('Error clicking on cookie consent:', e)
+
 
 def extract_locations(text):
     tokens = word_tokenize(text)
@@ -312,25 +320,44 @@ def click_feedback(driver):
     except TimeoutException:
         print("timeout occurred whilst waiting for feedback click")
 
+
 def click_continue(driver):
     try:
-        # click_ticket = WebDriverWait(driver,10).until(EC.element_to_be_clickable((By.XPATH, '//*[@id="outward-1"]')))
-        click_ticket = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.ID, 'result-card-selection-outward-0-422def92')))
+        click_ticket = WebDriverWait(driver,10).until(EC.element_to_be_clickable((By.XPATH, '//*[contains(@id, "outward-0")][1]')))
+        click_ticket_price = click_ticket.find_elements(By.XPATH, ".//span[contains(text(), '£')]")
+        cheapest = float(click_ticket_price[0].text.replace('£', ''))
+
+        available_tickets = driver.find_elements(By.XPATH, '//*[contains(@id, "outward-")][1]')
+        for ticket_option in available_tickets:
+            current_ticket_price = ticket_option.find_elements(By.XPATH, ".//span[contains(text(), '£')]")
+            if current_ticket_price:
+                current_ticket_price = float(current_ticket_price[0].text.replace('£', ''))
+                if current_ticket_price < cheapest:
+                    click_ticket = ticket_option
+                    cheapest = current_ticket_price
+                    print("new cheapest ticket")
+
+        #click_ticket = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.ID, 'result-card-selection-outward-0-422def92')))
         time.sleep(0.5)
         click_ticket.click()
         driver.execute_script("arguments[0].click();", click_ticket)
         time.sleep(0.5)
-        #cont_button = WebDriverWait(driver,10).until(EC.element_to_be_clickable((By.XPATH, '//*[@id="jp-summary-buy-link"]/span[1]')))
-        cont_button = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.ID, 'jp-summary-buy-link')))
+        cont_button = WebDriverWait(driver,10).until(EC.element_to_be_clickable((By.XPATH, '//*[@id="jp-summary-buy-link"]/span[1]')))
+        #cont_button = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.ID, 'jp-summary-buy-link')))
         time.sleep(0.5)
         cont_button.click()
-        time.sleep(0.5)
-        # buy_button = WebDriverWait(driver,10).until(EC.element_to_be_clickable((By.XPATH, '//*[@id="jp-summary-buy-link"]/span[1]')))
-        # time.sleep(1)
-        # buy_button.click()
-    except TimeoutException:
-        print('timed out')
+    except TimeoutException as e:
+        print(f'timed out: {e}')
 
+
+def click_buy(driver):
+    try:
+        #buy_button = WebDriverWait(driver,10).until(EC.element_to_be_clickable((By.XPATH, '//*[@id="jp-summary-buy-link"]/span[1]')))
+        buy_button = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.ID, 'jp-summary-buy-link')))
+        time.sleep(0.5)
+        buy_button.click()
+    except TimeoutException as e:
+        print(f'timed out: {e}')
 
 def extract_train_ticket(driver):
     try:
@@ -357,8 +384,8 @@ def main(destination, departure, date, train_time, adults, children, railcard):
     passenger_number_child = children
     railcard = railcard
 
-    if railcard == "no":
-        railcard = ""
+    # if railcard == "no":
+    #     railcard = ""
 
     driver = webdriver.Chrome()
     driver.get("https://www.nationalrail.co.uk")
@@ -377,13 +404,26 @@ def main(destination, departure, date, train_time, adults, children, railcard):
     select_departure_minute(driver, choose_minute)
     select_adults(driver, passenger_number_adult)
     select_children(driver, passenger_number_child)
-    add_railcard(driver, railcard)
+    if railcard != "no":
+        add_railcard(driver, railcard)
+
+    # GET URLS
+    ticket_links = []
     click_show_trains(driver)
-    time.sleep(1)
+    time.sleep(0.5)
     click_feedback(driver)
-    time.sleep(2)
+    time.sleep(0.5)
     click_continue(driver)
-    ticket_links = extract_train_ticket(driver)
+    click_feedback(driver)
+    ticket_links.append(driver.current_url)
+    click_buy(driver)
+    try:
+        WebDriverWait(driver, 20).until(EC.url_contains("greateranglia"))
+        click_ga_cookie(driver)
+        ticket_links.append(driver.current_url)
+    except:
+        pass
+    #ticket_links = extract_train_ticket(driver)
     # try:
     #     click_continue(driver)
     # except:
@@ -402,4 +442,4 @@ def main(destination, departure, date, train_time, adults, children, railcard):
 
 
 if __name__ == "__main__":
-    main("NORWICH", "DISS", "07 June 2024", ["20", "15"], 3, 3, "")
+    main("NORWICH", "DISS", "07 June 2024", ["20", "15"], 3, 3, "no")

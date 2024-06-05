@@ -380,8 +380,8 @@ class CustomerExpert(KnowledgeEngine):
 
         ticket_links = Webscraping.main(d, de, dt, t, a, c, r)
         if ticket_links:
-            # for link in ticket_links:
-            app.insert_messages(f"Ticket Link: {ticket_links}", "Chatbot")
+            for link in ticket_links:
+                app.insert_messages(f"Ticket Link: {link}", "Chatbot")
         else:
             app.insert_messages("There were no available tickets for your request.", "Chatbot")
 
