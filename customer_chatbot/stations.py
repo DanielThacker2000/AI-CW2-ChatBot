@@ -16,6 +16,7 @@ derby = []
 stowmarket = []
 diss = []
 norwich = []
+liverpool = []
 
 with open("data/stations.txt") as f:
     for line in f:
@@ -39,6 +40,8 @@ with open("data/stations.txt") as f:
             diss.append(parts[1].strip())
         elif "NORWICH" in station_name:
             norwich.append(parts[1].strip())
+        elif "LIVERPOOL STREET" in station_name:
+            liverpool.append(parts[1].strip())
 
 
 # Match loaded sentences with appropriate labels for use with spacy
@@ -53,7 +56,8 @@ for sentence_list, label in [(stratford, 'STRATFORD'),
                               (derby, 'DERBY ROAD'),
                               (stowmarket, 'STOWMARKET'),
                               (diss, 'DISS'),
-                              (norwich, 'NORWICH')]:
+                              (norwich, 'NORWICH'),
+                              (liverpool, 'LIVERPOOL STREET')]:
     for sentence in sentence_list:
         labels.append(label)
         sentences.append(sentence.lower().strip())

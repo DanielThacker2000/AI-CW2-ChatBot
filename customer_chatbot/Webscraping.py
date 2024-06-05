@@ -385,7 +385,6 @@ def main(destination, departure, date, train_time, adults, children, railcard):
     destination_location = destination
     departure_location = departure
     choose_date = date
-    #choose_date = "07 June 2024"
     choose_hour = train_time[0]
     choose_minute = train_time[1]
     passenger_number_adult = adults
@@ -424,11 +423,11 @@ def main(destination, departure, date, train_time, adults, children, railcard):
     click_continue(driver)
     click_feedback(driver)
     ticket_links.append(driver.current_url)
-    click_buy(driver)
-    driver.switch_to.window(driver.window_handles[-1])
-    time.sleep(6)
-    click_ga_cookie(driver)
-    ticket_links.append(driver.current_url)
+    # click_buy(driver)
+    # driver.switch_to.window(driver.window_handles[-1])
+    # time.sleep(6)
+    # click_ga_cookie(driver)
+    # ticket_links.append(driver.current_url)
     # except:
     #     pass
     #ticket_links = extract_train_ticket(driver)

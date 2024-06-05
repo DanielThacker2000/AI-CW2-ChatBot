@@ -7,11 +7,14 @@ Uses SPACY NLP to handle the extraction of relevant entities from a given input
 """
 # Import Packages
 import spacy
+from spacy.tokens import Doc
 from spacy.matcher import Matcher
 from word2number import w2n
 import dateparser
 from datetime import datetime
 from textblob import TextBlob
+
+
 
 
 # Import Files
@@ -33,8 +36,6 @@ def correct_spelling(spell_check):
 
 
 """ Functions for extracting targeted entity information"""
-
-
 def process_intention(input_intent):
     # Identify intention of message
     intention = intent.get_similar_intention(input_intent)
@@ -101,6 +102,7 @@ def process_date(input_date):
     for ent in doc.ents:
         if ent.label_ == "DATE":
             date_ent = ent.text
+
     # Parse the input date string
     parsed_date = dateparser.parse(date_ent)
 
@@ -149,10 +151,13 @@ def process_hour(input_hour):
         mm_time = parsed_time.strftime("%M")
         # Round minutes to quarter of an hour
         int_minutes = int(mm_time)
+        int_hour = int(hh_time)
         round_minutes = round(int_minutes / 15) * 15
         # Properly format 60 and 0 minutes
         if round_minutes == 60:
             round_minutes = "00"
+            int_hour += 1
+            hh_time = str(int_hour)
         elif round_minutes == 0:
             round_minutes = "00"
         minutes = str(round_minutes)
@@ -261,13 +266,13 @@ def process_lateness(input_lateness):
         token = doc[i]
 
         # Handle non-plural hour, half, quarter and minute
-        if token.text.lower() == "hour":
+        if token.text.lower() in ["hour", "hr"]:
             if skip_next_hour:
                 skip_next_hour = False
                 break
             else:
                 minutes_late += 60
-        elif token.text.lower() == "minute":
+        elif token.text.lower() in ["minute", "min"]:
             minutes_late += 1
         elif token.text.lower() == "quarter":
             skip_next_hour = True
@@ -294,9 +299,9 @@ def process_lateness(input_lateness):
 
             # Check if the next token represents "minutes" or "hour"
             if i < len(doc) - 1:
-                if token.nbor().text.lower() == "minutes":
+                if token.nbor().text.lower() in ["minutes", "mins"] :
                     minutes_late += number
-                elif token.nbor().text.lower() == "hours":
+                elif token.nbor().text.lower() in ["hours", "hrs"]:
                     if skip_next_hour:
                         skip_next_hour = False
                         break
@@ -361,7 +366,7 @@ def process_railcard(input_railcard):
     doc1 = nlp(input_railcard)
     railcard = "unclear"
     for token in doc1:
-        if token.text.lower() in ["railcard", "card"]:
+        if token.text.lower() in ["railcard", "card", "rlcrd"]:
             railcard = rc.get_railcard(input_railcard)
         if railcard != "unclear":
             break
@@ -432,9 +437,9 @@ def lemmatize_and_clean(input):
 
 if __name__ == "__main__":
     # TESTING INPUTS HERE
-    # input = "colechester"
-    # print("\nInput: ", input)
-    # print("Station: ", process_single_station(input))
+    input = "liverpol st"
+    print("\nInput: ", input)
+    print("Station: ", process_single_station(input))
 
     # input = "i have a 16-25 railcard."
     # print("\nInput: ", input)
@@ -448,17 +453,17 @@ if __name__ == "__main__":
     # print("\nInput: ", input)
     # print("Passengers: ", process_passengers(input))
     #
-    # input = "10th of July"
-    # print("\nInput: ", input)
-    # print("Date: ", process_date(input))
-    #
-    # input = "7:32 am"
-    # print("\nInput: ", input)
-    # print("Time: ", process_hour(input))
-    #
-    input = "I'm forty five minutes late."
+    input = "30th of july"
     print("\nInput: ", input)
-    print("Minutes Late: ", process_lateness(input))
+    print("Date: ", process_date(input))
+    #
+    input = "2:30"
+    print("\nInput: ", input)
+    print("Time: ", process_hour(input))
+    #
+    # input = "I'm forty five minutes late."
+    # print("\nInput: ", input)
+    # print("Minutes Late: ", process_lateness(input))
     #
     # input = "I want to check a delay going from ipswich to colchester"
     # print("\nInput: ", input)
